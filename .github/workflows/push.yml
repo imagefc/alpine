@@ -1,6 +1,13 @@
 name: CI
-run-name: Building alpine ${{ vars.version }}
+run-name: Building alpine ${{ github.event.inputs.version }}
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: alpine version
+        required: true
+        default: '3.17'
+
   push:
     branches:
       - main
@@ -22,17 +29,21 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         build-args: |
-          version=${{ vars.version }}
+          version=${{ github.event.inputs.version }}
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ${{ github.repository }}:${{ vars.version }}
+        tags: ${{ github.repository }}:${{ github.event.inputs.version }}
+        cache-from: type=registry,ref=imagefc/alpine:${{ github.event.inputs.version }}
+        cache-to: type=inline
     - name: Build and push bash version
       uses: docker/build-push-action@v4
       with:
         build-args: |
-          version=${{ vars.version }}
+          version=${{ github.event.inputs.version }}
         push: ${{ github.event_name != 'pull_request' }}
         file: bash.Dockerfile
-        tags: ${{ github.repository }}:${{ vars.version }}-bash
+        tags: ${{ github.repository }}:${{ github.event.inputs.version }}-bash
+        cache-from: type=registry,ref=imagefc/alpine:${{ github.event.inputs.version }}
+        cache-to: type=inline
     
       
     
