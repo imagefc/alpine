@@ -24,7 +24,7 @@ jobs:
         build-args: |
           version=${{ vars.version }}
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ${{ vars.version }}
+        tags: ${{ github.repository }}:${{ vars.version }}
     - name: Build and push bash version
       uses: docker/build-push-action@v4
       with:
@@ -32,7 +32,7 @@ jobs:
           version=${{ vars.version }}
         push: ${{ github.event_name != 'pull_request' }}
         file: bash.Dockerfile
-        tags: ${{ vars.version }}-bash
+        tags: ${{ github.repository }}:${{ vars.version }}-bash
     
       
     
