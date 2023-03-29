@@ -8,10 +8,6 @@ on:
         required: true
         default: '3.17'
 
-  push:
-    branches:
-      - main
-
 jobs:
   build:
     runs-on: ubuntu-22.04
