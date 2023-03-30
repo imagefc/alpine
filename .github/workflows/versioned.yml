@@ -1,5 +1,5 @@
-name: CI
-run-name: Building alpine ${{ github.event.inputs.version }}
+name: Versioned
+run-name: Building imagefc/alpine:${{ github.event.inputs.version }}
 on:
   workflow_dispatch:
     inputs:

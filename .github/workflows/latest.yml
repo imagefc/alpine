@@ -1,0 +1,24 @@
+name: Latest
+run-name: Tagging/Updating imagefc/alpine:latest
+on:
+  workflow_dispatch:
+    inputs:
+      latest_version:
+        description: latest alpine version
+        required: true
+        default: '3.17'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push
+      run: |
+        docker pull imagefc/alpine:${{ github.event.inputs.latest_version}}
+        docker tag imagefc/alpine:${{ github.event.inputs.latest_version}} imagefc/alpine:latest
+        docker push imagefc/alpine:latest
