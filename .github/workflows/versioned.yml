@@ -6,7 +6,7 @@ on:
       version:
         description: alpine version
         required: true
-        default: '3.17'
+        default: '3.18'
 
 jobs:
   build:
@@ -40,8 +40,3 @@ jobs:
         tags: ${{ github.repository }}:${{ github.event.inputs.version }}-bash
         cache-from: type=registry,ref=imagefc/alpine:${{ github.event.inputs.version }}
         cache-to: type=inline
-    
-      
-    
-        
-    
