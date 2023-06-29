@@ -1,24 +1,42 @@
 name: Latest
-run-name: Tagging/Updating imagefc/alpine:latest
+run-name: Building imagefc/alpine:${{ github.event.inputs.version }} (as latest)
 on:
   workflow_dispatch:
     inputs:
-      latest_version:
-        description: latest alpine version
+      version:
+        description: alpine version
         required: true
-        default: '3.17'
+        default: '3.18'
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Push
-      run: |
-        docker pull imagefc/alpine:${{ github.event.inputs.latest_version}}
-        docker tag imagefc/alpine:${{ github.event.inputs.latest_version}} imagefc/alpine:latest
-        docker push imagefc/alpine:latest
+    - name: Build and push
+      uses: docker/build-push-action@v4
+      with:
+        build-args: |
+          version=${{ github.event.inputs.version }}
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ github.repository }}:${{ github.event.inputs.version }},${{ github.repository }}:latest
+        cache-from: type=registry,ref=imagefc/alpine:${{ github.event.inputs.version }}
+        cache-to: type=inline
+    - name: Build and push bash version
+      uses: docker/build-push-action@v4
+      with:
+        build-args: |
+          version=${{ github.event.inputs.version }}
+        push: ${{ github.event_name != 'pull_request' }}
+        file: bash.Dockerfile
+        tags: ${{ github.repository }}:${{ github.event.inputs.version }}-bash
+        cache-from: type=registry,ref=imagefc/alpine:${{ github.event.inputs.version }}
+        cache-to: type=inline
